@@ -16,6 +16,7 @@ def help():
     print("if you want to display this panel again write help")
 
 def add():
+    global user_id
     task = input()
     tasks.append(task)
     print("task added")
@@ -27,14 +28,15 @@ def add():
 def remove():
     task = input()
     try:
-        tasks.remove(task)
         with open("base.json","r+")as f:
-            base_py[user_id].get("tasks").remove(task) #removes tasks from list in python
+            base_py[0].get("tasks").remove(task) #removes tasks from list in python
             f.truncate(0)
             f.seek(0) #writing changes in base.json file
             json.dump(base_py,fp=f,indent=4)
-    except ValueError:
+    except ValueError as e:
         print("remove valid task")
+        print(e)
+        print(base_py[0])
 
 print("put your username")
 username = input()
@@ -43,6 +45,7 @@ with open("base.json","r")as f:
     for i in base_py:
         if i["username"] == username: #checking if user is in base
             user_id = base_py.index(i) 
+            print(base_py.index(i))
             print("welcome back")
             new_user = False 
             tasks = base_py[user_id].get("tasks") #getting tass from base
@@ -52,7 +55,8 @@ if new_user == True: #i am writing this in another if statment bc it got corrupt
             base_py.append({"username":username,"tasks":[]}) #adding user to list
             f.truncate(0)
             f.seek(0)
-            json.dump(base_py,indent=4,fp=f) #writing user to base
+            json.dump(base_py,indent=4,fp=f) #writing user to base 
+            user_id = len(base_py) #getting id of new user
             print("you have been added to userbase")
 help()
 while True:
